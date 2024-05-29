@@ -1,0 +1,118 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  Therapist
+  Patient
+}
+
+enum AppointmentType {
+  Consultation
+  Therapy
+}
+
+enum PreferredLanguage {
+  Spanish
+  English
+}
+
+model User {
+  id            String     @id @unique
+  sendbirdId    String?    @unique
+  stripeId      String?    @unique
+  role          Role?
+  patientData   Patient?
+  therapistData Therapist?
+}
+
+model Patient {
+  id                String            @id @unique
+  name              String
+  ageRangeStart     Int
+  ageRangeEnd       Int
+  gender            String
+  preferredLanguage PreferredLanguage
+  reviews           Review[]
+  appointments      Appointment[]
+  chats             Chat[]
+  //
+  userId            String            @unique
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Therapist {
+  id                String        @id @unique
+  name              String
+  bio               String
+  imagePath         String
+  ethnicity         String
+  country           String?
+  credentials       String
+  yearsOfExperience Int
+  languages         String[]
+  focusTags         String[]
+  reviews           Review[]
+  appointments      Appointment[]
+  availableTimes    DateTime[]
+  chats             Chat[]
+  //
+  userId            String        @unique
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id            Int         @id @default(autoincrement())
+  createdAt     DateTime    @default(now())
+  amount        Float
+  description   String      @default("")
+  //
+  appointmentId Int         @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Restrict)
+}
+
+model Review {
+  id          Int       @id @default(autoincrement())
+  rating      Int
+  comment     String?
+  //
+  therapistId String
+  therapist   Therapist @relation(fields: [therapistId], references: [id], onDelete: Cascade)
+  //
+  patientId   String
+  patient     Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+model Appointment {
+  id              Int             @id @default(autoincrement())
+  isApproved      Boolean         @default(false)
+  appointmentType AppointmentType
+  startTime       DateTime
+  endTime         DateTime
+  notes           String
+  meetingLink     String
+  //
+  therapistId     String
+  therapist       Therapist       @relation(fields: [therapistId], references: [id], onDelete: Cascade)
+  //
+  patientId       String
+  patient         Patient         @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  //
+  payment         Payment?
+}
+
+model Chat {
+  id          Int       @id @default(autoincrement())
+  url         String
+  //
+  therapistId String
+  therapist   Therapist @relation(fields: [therapistId], references: [id], onDelete: Cascade)
+  //
+  patientId   String
+  patient     Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
