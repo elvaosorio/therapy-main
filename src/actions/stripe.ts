@@ -11,7 +11,6 @@ export async function createCheckoutSession(
 ): Promise<{ client_secret: string | null; url: string | null }> {
     const ui_mode = data.get(
         "uiMode",
-        //@ts-expect-error UiMode does exist
     ) as Stripe.Checkout.SessionCreateParams.UiMode;
 
     const origin: string = headers().get("origin") as string;
@@ -43,12 +42,10 @@ export async function createCheckoutSession(
                 return_url: `${origin}/checkout/result?session_id={CHECKOUT_SESSION_ID}`,
                 // return_url: `${origin}/embedded-checkout/result?session_id={CHECKOUT_SESSION_ID}`,
             }),
-            //@ts-expect-error ui_mode does exist
             ui_mode,
         });
 
     return {
-        //@ts-expect-error client_secret does exist
         client_secret: checkoutSession.client_secret,
         url: checkoutSession.url,
     };

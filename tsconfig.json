@@ -30,5 +30,8 @@
     "prettier.config.ts",
     "next.config.js"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "node_modules/stripe/types/PlansResource.d.ts"
+  ]
 }

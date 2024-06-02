@@ -15,7 +15,6 @@ import type Stripe from "stripe";
 import { Button } from "../ui/button";
 
 interface CheckoutFormProps {
-    //@ts-expect-error trust me bro
     uiMode: Stripe.Checkout.SessionCreateParams.UiMode;
     onClick: MouseEventHandler<HTMLButtonElement>;
 }
@@ -46,7 +45,6 @@ export default function CheckoutForm(props: CheckoutFormProps): JSX.Element {
     const formAction = async (data: FormData): Promise<void> => {
         const uiMode = data.get(
             "uiMode",
-            //@ts-expect-error trust me bro
         ) as Stripe.Checkout.SessionCreateParams.UiMode;
         const { client_secret, url } = await createCheckoutSession(data);
 
